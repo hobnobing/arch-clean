@@ -141,8 +141,6 @@ else
     FREED_HUMAN="0B"
 fi
 
-echo -e "\n${YELLOW}Storage:${NC}"
-df -h /
 echo -e "${YELLOW}Total space reclaimed: ${GREEN}${FREED_HUMAN}${NC}"
 
 echo -e "\n${CYAN}Arch Clean Complete${NC}"
