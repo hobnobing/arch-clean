@@ -15,13 +15,7 @@ Simple script that:
 
 The script does not prompt for each step, everything above will happen automatically.
 
-
 ## Installation
-```
-curl -sSL https://raw.githubusercontent.com/hobnobing/arch-clean/main/arch-clean.sh | sudo tee /usr/local/bin/arch-clean > /dev/null && sudo chmod +x /usr/local/bin/arch-clean
-```
-
-## Manual Installation
 
 ```
 git clone https://github.com/hobnobing/arch-clean.git
