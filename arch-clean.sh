@@ -69,10 +69,10 @@ run_with_dots "[5/9] Removing systemd coredumps" bash -c "rm -rf /var/lib/system
 
 if command -v flatpak &> /dev/null; then
     run_with_dots "[6/9] Cleaning Flatpak leftovers & unused runtimes" flatpak uninstall --unused --delete-data --noninteractive
-fi
-
-if command -v docker &> /dev/null; then
+elif command -v docker &> /dev/null; then
     run_with_dots "[6/9] Pruning Docker assets" docker system prune -af
+else
+    run_with_dots "[6/9] Checking Flatpak and Docker assets" true
 fi
 
 run_with_dots "[7/9] Cleaning user caches, logs, & app leftovers for $REAL_USER" runuser -u "$REAL_USER" -- bash -c '
@@ -114,11 +114,8 @@ for target in "${USER_CACHE_DIRS[@]}"; do
     fi
 done'
 
-run_with_dots "[8/9] Cleaning orphaned AUR build directories" runuser -u "$REAL_USER" -- bash -c \
-  "rm -rf $HOME/.cache/yay/* $HOME/.cache/paru/clone/* 2>/dev/null || true"
-
-run_with_dots "[8/9] Cleaning broken symlinks in system paths" bash -c \
-  "find /var /tmp -type l ! -exec test -e {} \; -delete 2>/dev/null || true"
+run_with_dots "[8/9] Cleaning build directories & broken symlinks" bash -c \
+  "runuser -u $REAL_USER -- rm -rf $USER_HOME/.cache/yay/* $USER_HOME/.cache/paru/clone/* 2>/dev/null || true; find /var /tmp -type l ! -exec test -e {} \; -delete 2>/dev/null || true"
 
 if command -v pacdiff &> /dev/null; then
     PACFILES=$(PACMAN_OUTPUT=1 pacdiff -l 2>/dev/null || true)
