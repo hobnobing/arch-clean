@@ -47,35 +47,35 @@ echo -e "${CYAN}Arch Clean${NC}\n"
 ORPHANS=$(pacman -Qtdq 2>/dev/null || true)
 if [ -n "$ORPHANS" ]; then
     mapfile -t ORPHAN_ARRAY <<< "$ORPHANS"
-    run_with_dots "[1/10] Removing orphan packages" pacman -Rns --noconfirm "${ORPHAN_ARRAY[@]}"
+    run_with_dots "[1/9] Removing orphan packages" pacman -Rns --noconfirm "${ORPHAN_ARRAY[@]}"
 else
-    run_with_dots "[1/10] Checking orphan packages" true
+    run_with_dots "[1/9] Checking orphan packages" true
 fi
 
-run_with_dots "[2/10] Cleaning Pacman cache" bash -c \
+run_with_dots "[2/9] Cleaning Pacman cache" bash -c \
   "rm -rf /var/cache/pacman/pkg/download-* /var/cache/pacman/pkg/*.part 2>/dev/null || true; paccache -r -k2; paccache -ruk0"
 
 if command -v yay &> /dev/null; then
-    run_with_dots "[3/10] Cleaning yay cache ($REAL_USER)" runuser -u "$REAL_USER" -- yay -Sc --aur --noconfirm
+    run_with_dots "[3/9] Cleaning yay cache ($REAL_USER)" runuser -u "$REAL_USER" -- yay -Sc --aur --noconfirm
 elif command -v paru &> /dev/null; then
-    run_with_dots "[3/10] Cleaning paru cache ($REAL_USER)" runuser -u "$REAL_USER" -- paru -Sc --aur --noconfirm
+    run_with_dots "[3/9] Cleaning paru cache ($REAL_USER)" runuser -u "$REAL_USER" -- paru -Sc --aur --noconfirm
 else
-    run_with_dots "[3/10] Checking for AUR helpers" true
+    run_with_dots "[3/9] Checking for AUR helpers" true
 fi
 
-run_with_dots "[4/10] Vacuuming systemd logs older than 2 weeks" journalctl --vacuum-time=2w
+run_with_dots "[4/9] Vacuuming systemd logs older than 2 weeks" journalctl --vacuum-time=2w
 
-run_with_dots "[5/10] Removing systemd coredumps" bash -c "rm -rf /var/lib/systemd/coredump/* /var/log/journal/*/*.journal~ 2>/dev/null || true"
+run_with_dots "[5/9] Removing systemd coredumps" bash -c "rm -rf /var/lib/systemd/coredump/* /var/log/journal/*/*.journal~ 2>/dev/null || true"
 
 if command -v flatpak &> /dev/null; then
-    run_with_dots "[6/10] Cleaning Flatpak leftovers & unused runtimes" flatpak uninstall --unused --delete-data --noninteractive
+    run_with_dots "[6/9] Cleaning Flatpak leftovers & unused runtimes" flatpak uninstall --unused --delete-data --noninteractive
 fi
 
 if command -v docker &> /dev/null; then
-    run_with_dots "[6/10] Pruning Docker assets" docker system prune -af
+    run_with_dots "[6/9] Pruning Docker assets" docker system prune -af
 fi
 
-run_with_dots "[7/10] Cleaning user caches, logs, & app leftovers for $REAL_USER" runuser -u "$REAL_USER" -- bash -c '
+run_with_dots "[7/9] Cleaning user caches, logs, & app leftovers for $REAL_USER" runuser -u "$REAL_USER" -- bash -c '
 USER_CACHE_DIRS=(
     "$HOME/.local/share/Trash"
     "$HOME/.cache/thumbnails"
@@ -114,22 +114,22 @@ for target in "${USER_CACHE_DIRS[@]}"; do
     fi
 done'
 
-run_with_dots "[8/10] Cleaning orphaned AUR build directories" runuser -u "$REAL_USER" -- bash -c \
+run_with_dots "[8/9] Cleaning orphaned AUR build directories" runuser -u "$REAL_USER" -- bash -c \
   "rm -rf $HOME/.cache/yay/* $HOME/.cache/paru/clone/* 2>/dev/null || true"
 
-run_with_dots "[9/10] Cleaning broken symlinks in system paths" bash -c \
+run_with_dots "[8/9] Cleaning broken symlinks in system paths" bash -c \
   "find /var /tmp -type l ! -exec test -e {} \; -delete 2>/dev/null || true"
 
 if command -v pacdiff &> /dev/null; then
     PACFILES=$(PACMAN_OUTPUT=1 pacdiff -l 2>/dev/null || true)
-    run_with_dots "[10/10] Checking for unmerged configuration files (.pacnew / .pacsave)" true
+    run_with_dots "[9/9] Checking for unmerged configuration files (.pacnew / .pacsave)" true
     if [ -n "$PACFILES" ]; then
         echo -e "${YELLOW}WARNING: Unmerged configuration files detected:${NC}"
         echo "$PACFILES"
         echo "Run 'pacdiff' manually after this script finishes to merge them."
     fi
 else
-    run_with_dots "[10/10] Checking for pacdiff utility" true
+    run_with_dots "[9/9] Checking for pacdiff utility" true
 fi
 
 AFTER_KB=$(get_avail_kb)
