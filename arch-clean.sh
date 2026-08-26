@@ -42,7 +42,7 @@ run_with_dots() {
   echo -e "\r${WHITE}${title}...${NC} ${GREEN}Done.${NC}"
 }
 
-echo -e "${CYAN}Arch Clean (Aggressive Edition)${NC}\n"
+echo -e "${CYAN}Arch Clean${NC}\n"
 
 ORPHANS=$(pacman -Qtdq 2>/dev/null || true)
 if [ -n "$ORPHANS" ]; then
@@ -143,6 +143,6 @@ fi
 
 echo -e "\n${YELLOW}Storage:${NC}"
 df -h /
-echo -e "${GREEN}Total space reclaimed: ${WHITE}${FREED_HUMAN}${NC}"
+echo -e "${YELLOW}Total space reclaimed: ${GREEN}${FREED_HUMAN}${NC}"
 
-echo -e "\n${GREEN}Arch Clean Complete${NC}"
+echo -e "\n${CYAN}Arch Clean Complete${NC}"
